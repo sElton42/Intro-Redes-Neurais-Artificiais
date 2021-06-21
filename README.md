@@ -7,7 +7,7 @@ trainPercep.m: Função de treino de uma rede Perceptron de camada única e neur
 
 EP1.m: Aplicação do Perceptron Camada Simples na resolução de um problema.
 
-<h1> PERCEPTRON MULTICAMADAS </h1>
+<h1 style="color:blue;"> PERCEPTRON MULTICAMADAS </h1>
 
 BackPropOnPMC.m: Função de treino de uma rede Perceptron Multicamadas com quantidade de neurônios e camadas definido pelo usuário. Utiliza a função logística no treinamento.
 
