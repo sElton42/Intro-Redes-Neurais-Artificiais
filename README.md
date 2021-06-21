@@ -20,3 +20,4 @@ diabetes.csv: Arquivo CSV contendo dados de pessoas diabéticas, obtido em uma b
 OperationLOG.m: Script para testar o Perceptron Multicamadas usando função logística, com os dados do arquivos diabetes.csv.
 
 OperationTANH.m: Script para testar o Perceptron Multicamadas usando função tangente hiperbólica com os dados do arquivos diabetes.csv.
+<span style="color:blue">some *blue* text</span>.
