@@ -1,4 +1,4 @@
-Contém os códigos desenvolvidos para alguns tipos de Redes Neurais Artificiais, para a disciplina de Introdução às Redes Neurais Artificiais.
+Contém os códigos desenvolvidos em Matlab para alguns tipos de Redes Neurais Artificiais, no contexto da disciplina de Introdução às Redes Neurais Artificiais.
 
 
 PERCEPTRON CAMADA SIMPLES
