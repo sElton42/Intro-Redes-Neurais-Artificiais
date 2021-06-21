@@ -9,7 +9,7 @@ EP1.m: Aplicação do Perceptron Camada Simples na resolução de um problema.
 
 <h1> PERCEPTRON MULTICAMADAS </h1>
 
-<p style="color:orange;"> BackPropOnPMC.m: </p> Função de treino de uma rede Perceptron Multicamadas com quantidade de neurônios e camadas definido pelo usuário. Utiliza a função logística no treinamento.
+BackPropOnPMC.m: Função de treino de uma rede Perceptron Multicamadas com quantidade de neurônios e camadas definido pelo usuário. Utiliza a função logística no treinamento.
 
 BackPropOnPMCTANH.m: Função de treino de uma rede Perceptron Multicamadas com quantidade de neurônios e camadas definido pelo usuário. Utiliza a função tangente hiperbólica no treinamento.
 
