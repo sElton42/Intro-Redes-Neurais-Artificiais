@@ -17,6 +17,16 @@ Contém os códigos desenvolvidos em Matlab para alguns tipos de Redes Neurais A
 
 *diabetes.csv:* Arquivo CSV contendo dados de pessoas diabéticas, obtido em uma base de dados pública, para servir de testes do treinamento da rede neural.
 
-*OperationLOG.m:* Script para testar o Perceptron Multicamadas usando função logística, com os dados do arquivos diabetes.csv.
+*OperationLOG.m:* Script para testar o Perceptron Multicamadas usando função logística, com os dados do arquivo diabetes.csv.
 
 *OperationTANH.m:* Script para testar o Perceptron Multicamadas usando função tangente hiperbólica com os dados do arquivos diabetes.csv.
+
+<h1> REDE RBF (Radial Basis Function Network) </h1>
+
+*trainRBF.m:* Função de treino de uma rede de Função de Base Radial (RBF).
+
+*OperationRBF.m:* Script para testar a rede de Função de Base Radial (RBF) com os dados do arquivo diabetes.csv.
+
+*dataImport.m:* Função para importar dados de um arquivo CSV para poder usar com a rede RBF.
+
+*diabetes.csv:* Arquivo CSV contendo dados de pessoas diabéticas, obtido em uma base de dados pública, para servir de testes do treinamento da rede neural.
