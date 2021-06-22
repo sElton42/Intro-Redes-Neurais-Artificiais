@@ -1,14 +1,15 @@
-function [w, w_0, epcs, EMQ ,vari] = trainRBF(x, d, eta, sigma, maxEpcs, model)
+function [w, w_0, epcs, EMQ, accuracyTrain, vari] = trainRBF(x, d, eta, sigma, maxEpcs, model)
 
-    [L, C]        = size(x);      % dimensões da matriz de amostras
-    epcs          = 0;            % inicializando contador de épocas
-    erroAtual     = 123456789;    % inicialização de um valor qualquer grande para o erro quadrático médio atual
-    erroAnterior  = 0;            % inicialização da variável que receberá o erro quadrático médio da época anterior
-    grupoAtual    = 0;            % Inicialização do vetor contendo a qual cluster pertence cada amostra na iteração atual
-    grupoAnterior = 1;            % Inicialização do vetor contendo a qual cluster pertence cada amostra na iteração anterior
-    nAmPG         = 0;            % Inicia o contador de amostras por grupos
+%   ------------- Inicialização Variáveis da rede -------------------------
+    [L, C]        = size(x);    % dimensões da matriz de amostras
+    epcs          = 0;          % inicializando contador de épocas
+    erroAtual     = 123;        % inicialização de um valor qualquer grande para o erro quadrático médio atual
+    erroAnterior  = 0;          % inicialização da variável que receberá o erro quadrático médio da época anterior
+    grupoAtual    = 0;          % inicializa a variável que armazena quais grupos cada amostra pertence no k-means
+    grupoAnterior = 1;          % inicializa a variável que armazena quais grupos cada amostra pertence no k-means da ITERAÇÃO ANTERIOR
+    nAmPG         = 0;          % inicializa a variável que conta o n° de amostras por grupo
     
-%   inicialização do contador de número de elementos em cada grupo
+%   inicialização do contador do número de elementos
     for j = 1:model(1)
         nElemen{j,1} = 0;
     end
@@ -16,7 +17,8 @@ function [w, w_0, epcs, EMQ ,vari] = trainRBF(x, d, eta, sigma, maxEpcs, model)
 %   inicialização do erro médio quadrático
     EMQ = 0;
     
-    %   PEGANDO AMOSTRAS COM PRESENÇA DE RADIAÇÃO PARA O K-MEANS
+%   PEGANDO AMOSTRAS CLASSIFICADAS COMO UM DOS PADRÕES (1 ou -1) p/
+%   CLUSTERIZAÇÃO
     k = 1;
     for j = 1:C
         if( d(model(2), j) == 1 )
@@ -25,30 +27,39 @@ function [w, w_0, epcs, EMQ ,vari] = trainRBF(x, d, eta, sigma, maxEpcs, model)
         end
     end
     
-%   Dimensões da matriz de amostras
+%   Dimensões do grupo de amostras
     [Lk, Ck] = size(xk);
     
-%   ------------- Inicialização Pesos -------------
-    w{2, 1} = rand( model(2), model(1) + 1 ); % + 1 devido ao bias de cada neurônio da camada de saída
+%   -----------------------------------------------------------------------
+    
+%   ------------- Inicialização Pesos -------------------------------------
+
+%   inicializa pesos entre camada oculta e de saída
+%   + 1 devido ao bias de cada neurônio da camada de saída
+    w{2, 1} = rand( model(2), model(1) + 1 );
  
+%   inicializa centros de cada neurônio da camada escondida como sendo as n
+%	primeiras amostras do grupo de amostras de um só padrão, xk
     w{1, 1} = zeros( model(1) , L-1 );
     for nNeuron = 1 : model(1)
 %           cada neurônio tem o centro definido pelas coordenadas na linha
             w{1, 1}( nNeuron , : ) = xk( 2:L, nNeuron);
     end
-    w_0 = w;
-%   --------------------------
-    
-%   ************ K-MEANS - TREINAMENTO CAMADA OCULTA ************
+    w_0 = w; % guarda os pesos de inicialização
+%   -----------------------------------------------------------------------
 
-%   Executa até não ter diferença no grupo de cada amostra
+%   ------------- Algoritmo K-means  --------------------------------------
+%   Define os centros e variâncias de cada neurônio da camada oculta
+
+%   executa enquanto houver mudanças de amostras entre os grupos
     while( sum( (grupoAtual - grupoAnterior).^2 ) ~= 0 )
         
 %       Armazena os grupos de cada amostra da época anterior em
 %       grupoAnterior para efeitos de controle do código
         grupoAnterior = grupoAtual;
         
-%       Calcula a distância euclidiana entre cada amostra e os pesos       
+%       Calcula a distância euclidiana entre cada amostra e os centros de
+%       cada neurônio
         for nPeso = 1:model(1)
             for nAmostra = 1:Ck
                 for nCoordenada = 1 : Lk-1
@@ -78,11 +89,10 @@ function [w, w_0, epcs, EMQ ,vari] = trainRBF(x, d, eta, sigma, maxEpcs, model)
         end
         
 %       Realiza a atualização do peso (centro)
-%       para cada peso, pega as amostras pertencetes a seu grupo
+%       Para cada peso, pega as amostras pertencetes ao seu grupo,
 %       soma as coordenadas de cada dimensão
 %       divide a soma de cada coordenada pelo número de amostras dentro do
-%       grupo
-%       
+%       grupo   
         for nPeso_3 = 1:model(1)
             for nAmostra_3 = 1:Ck
                 if( grupos(1, nAmostra_3) == nPeso_3 ) % se o elemento do grupo for igual ao número do peso:
@@ -90,17 +100,15 @@ function [w, w_0, epcs, EMQ ,vari] = trainRBF(x, d, eta, sigma, maxEpcs, model)
                     nAmPG = nAmPG + 1; % armazena o número de amostras por grupo
                 end
             end
-            soma = sum( soma{nPeso_3, 1}' ); % <------- debug
+            soma = sum( soma{nPeso_3, 1}' );
             soma = soma / nAmPG;
             w{1,1}(nPeso_3, :) = soma; % atualiza os centros
             nAmPG = 0;
             clear soma
         end
-%   **************************
     end
     
-%   Após definir os centros, calcula a variância p/ cada neurônio após
-%   fazer a diferença entre cada amostra e o centro para cada neurônio
+%   Após calcular os centros, calcula a variância de cada neurônio
     for nPeso_4 = 1 : model(1)
         for nAmostra_4 = 1:Ck
               if( grupos(1, nAmostra_4) == nPeso_4 ) % se o elemento do grupo for igual ao número do peso:
@@ -110,10 +118,12 @@ function [w, w_0, epcs, EMQ ,vari] = trainRBF(x, d, eta, sigma, maxEpcs, model)
         end
           som = sum(difAMC);
           som2 = sum(som);
-          vari(nPeso_4, 1) = 1/nElemen{nPeso_4, 1} * som2
+          vari(nPeso_4, 1) = 1/nElemen{nPeso_4, 1} * som2;
     end
-
-%   Treinamento da camada de saída
+%   Fim K-means
+%   -----------------------------------------------------------------------
+  
+%   ------------- Treino da Camada de Saída  ------------------------------
     while( abs(erroAtual - erroAnterior) >= sigma && epcs <= maxEpcs )
         
         erroAnterior = erroAtual;
@@ -122,45 +132,49 @@ function [w, w_0, epcs, EMQ ,vari] = trainRBF(x, d, eta, sigma, maxEpcs, model)
 %       APLICAÇÃO DAS ENTRADAS NA CAMADA OCULTA
         for nPeso_5 = 1:model(1)
             for nAmostra_5 = 1:C
-%               aplica a função de ativação para cada amostra em cada
+%               aplica a função de ativação (gaussiana) para cada amostra em cada
 %               neurônio.
                 gu{nPeso_5,1}(1, nAmostra_5) = exp( (-1) * norm( x(2:L, nAmostra_5) - w{1,1}(nPeso_5, :)' )^2 / ( 2*vari(nPeso_5, 1) ) );
             end
         end
         
-%       APLICAÇÃO DAS SAÍDAS DA CAMADA OCULTA NA CAMADA DE SAÍDA
+%      APLICAÇÃO DAS SAÍDAS DA CAMADA OCULTA NA CAMADA DE SAÍDA
+%      Criação de um vetor separado para receber a saída dos neurônios da camada oculta 
        for nAmostra_6 = 1:C
            for nPeso_6 = 1:model(1)
                vetorAmostras(nPeso_6, nAmostra_6) = gu{nPeso_6, 1}(1,nAmostra_6);
            end
        end
        
+%      Pega a saída dos neurônios da camada oculta e concatena com o
+%      multiplicador do bias (-1)
        vetorAmostras_bias = [ (-1)*ones( 1, size(vetorAmostras, 2) ) ; vetorAmostras];
        
-%      saídas da camada de saída
+%      obtém a saída da camada de saída
        y = w{2,1} * vetorAmostras_bias;
        
 %      BACKPROPAGATION
+
+%      Pega o sinal de erro
        erro = d - y;
        
+%      Atualiza os pesos usando a regra delta generalizada (treino
+%      off-line)
        for nAmostra_7 = 1:C
            w{2,1} = w{2,1} + eta .* erro(1,nAmostra_7) .* vetorAmostras_bias(:, nAmostra_7)';
        end
+       
+%      Incrementa as épocas, calcula o erro quadrático médio
        epcs = epcs + 1;
-       erroSoma = sum(0.5 * erro.^2);
+%        erroSoma = sum(0.5 * erro.^2);
+       erroSoma = sum(sum(0.5 * erro.^2));
        EMQ(epcs) = 1/C * erroSoma;
        erroAtual = EMQ(epcs);
     end
     
-%   CHECAGEM DE ACERTOS DO TREINAMENTO
-    acertos = 0;
-    for nAmos = 1:C
-        if( y(1,nAmos)*d(1,nAmos) > 0 ), acertos = acertos + 1; end
-    end
-    plot(EMQ, '-r', 'LineWidth', 2)
-    title('Gráfico de Erro','LineWidth', 2)
-    legend('Érro Médio Quadrático')
-    xlabel(['Épocas [n = ' num2str(epcs) ']'])
-    ylabel('EMQ')
-    
+%% CHECAGEM DE ACERTOS DO TREINAMENTO
+    accuracyTrain = 0;
+%     for nAmos = 1:C
+%         if( y(1,nAmos)*d(1,nAmos) > 0 ), accuracyTrain = accuracyTrain + 1; end
+%     end
 end

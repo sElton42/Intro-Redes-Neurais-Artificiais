@@ -1,6 +1,7 @@
-function x = dataNewIMP(nomearq, numRows, numCols)
-% Importa dados novos de arquivos CSV, retornando em:
+function [x, d] = dataTrainIMP(nomearq, numRows, numCols, numSaidas)
+% Importa dados de treinamento de arquivos CSV, retornando em:
 % x:    entradas
+% d:    saídas desejadas
 % 
 % Recebendo:
 % nomearq:  nome do arquivo
@@ -8,7 +9,6 @@ function x = dataNewIMP(nomearq, numRows, numCols)
 % numCols:  número de colunas contendo dados
 
 % ELTON SOARES SILVA - 41711ETE010.
-% SAMUEL D. LIMA     - 41621ETE011
 
 % abre o arquivo de dados no modo leitura e pula a primeira linha
 % já que ela contém o header (cabeçalho)
@@ -22,6 +22,7 @@ kLine = 1;
 % a cada iteração, pega uma linha do arquivo, checa se é o fim ("end")
 % se for, para o laço while
 % se não for, divide a linha em células, uma p/ cada dado de entrada
+% e uma célula para a saída de cada amostra.
 % dentro do for, converte os dados dentro de cada célula p/ valores
 % numéricos (double) e depois armazena em data, na posição correta, 
 % dada pelo n° da linha kLine e n° da coluna kCol.
@@ -31,7 +32,7 @@ while 1
     
     if (strcmpi(fline(1:3), 'end')), break; end
     
-    aline = regexp( fline, ';','split' );
+    aline = regexp( fline, ',','split' );
 
     for kCol = 1:numCols
         data(kLine, kCol) = str2double(aline{1,kCol});
@@ -41,9 +42,12 @@ while 1
 end
 
 % armazena em x, os dados de entrada de cada amostra
+% armazena em d, as saídas desejadas de cada amostra
 % depois, faz a transposta
-x = data(:, 1 : numCols);
+x = data(:, 1 : numCols - numSaidas);
 x = x';
+d = data( :, (numCols - numSaidas + 1) : numCols );
+d = d';
 
 % Concatena matriz linha de uns com a matriz de dados x
 [L, C] = size(x);
