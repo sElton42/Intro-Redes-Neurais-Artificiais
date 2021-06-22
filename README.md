@@ -30,3 +30,18 @@ Contém os códigos desenvolvidos em Matlab para alguns tipos de Redes Neurais A
 *dataImport.m:* Função para importar dados de um arquivo CSV para poder usar com a rede RBF.
 
 *diabetes.csv:* Arquivo CSV contendo dados de pessoas diabéticas, obtido em uma base de dados pública, para servir de testes do treinamento da rede neural.
+
+<h1> ADALINE (Adaptive Linear Element) </h1>
+
+*trainADALINE.m:* Função de treino de uma rede ADALINE.
+
+*EP2.m:* Script para testar a rede ADALINE.
+
+*dataTrainIMP:* Função para importar os dados de treino da rede ADALINE.
+
+*dadosTreinamento.csv:* Dados de treinamento.
+
+*dataNewIMP:* Função para importar os dados de teste da rede ADALINE treinada.
+
+*dadosNovos.csv:* Dados de teste da rede treinada.
+
